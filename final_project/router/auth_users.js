@@ -1,6 +1,10 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-let books = require("./booksdb.js");
+let books = require("./booksdb.js").books;
+let findBooksByProp = require("./booksdb.js").findBooksByProp;
+let getBookByISBN = require("./booksdb.js").getBookByISBN;
+let deleteUserBookReview = require("./booksdb.js").deleteUserBookReview;
+let setUserBookReview = require("./booksdb.js").setUserBookReview;
 const regd_users = express.Router();
 
 let users = [];
@@ -26,7 +30,7 @@ regd_users.post("/login", (req, res) => {
   let username = req.body.username;
   let password = req.body.password;
   if (!username || !password) {
-    return res.status(404).json({ message: "Error logging in" });
+    return res.status(400).json({ message: "Error logging in - invalid parameters" });
   }
   if (authenticatedUser(username, password)) {
     //sign token
@@ -38,33 +42,42 @@ regd_users.post("/login", (req, res) => {
     };
     return res.status(200).json({ message: "Successfully logged in" });
   } else {
-    return res.status(208).json({ message: "Invalid login. Check username and password" });
+    return res.status(401).json({ message: "Invalid login. Check username and password" });
   }
-  // return res.status(300).json({message: "Yet to be implemented"});
+ 
 });
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", async (req, res) => {
-  //Write your code here
-  let book = books[req.body.isbn];
+  
+  let isbn = req.params.isbn;
   let username = req.body.username;
-  // let username = req.session.authorization.username;
-  if (book) {
+  let review = {content: req.body.review, date: new Date()};
 
-    //  if(!book.reviews.hasOwnProperty(username)) {
-    book.reviews[username] = { content: req.body.review, date: new Date() };
-    return res.status(200).json({ message: `Successfully set review for isbn ${req.body.isbn}: ${req.body.review}` });
+  try {
+    setUserBookReview(isbn, username, review);
+    // let book = books[isbn];
+    //function to add/modify review to isbn
+    // book.reviews[username] = { content: req.body.review, date: new Date() };
+    return res.status(200).json({ message: `Successfully saved review for isbn ${req.body.isbn}: ${req.body.review}` });
+  } catch (error){
 
-    // }
-  } else {
-    return res.status(404).json({ message: JSON.stringify("Provided ISBN does not exist", null, 4) });
+    return res.status(404).json({ message: error.message });
+
   }
-  // return res.status(204)
-  // return res.status(300).json({ message: "Yet to be implemented" });
+
 });
 
-regd_users.delete("/auth/review/:isbn", (req, res) => {
+regd_users.delete("/auth/review/:isbn", async (req, res) => {
   let isbn = req.params.isbn;
+  let username = req.params.username;
+  try {
+    deleteUserBookReview(isbn, username);
+  } catch(error){
+    return res.status(404).json({message: error.message});
+  }
+  //function to delete review of specified isbn
+  // if 
 
 });
 
