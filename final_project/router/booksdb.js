@@ -53,7 +53,6 @@ function getBookByISBN(isbn) {
   return new Promise((resolve, reject) => {
     if (books.hasOwnProperty(isbn)) {
       resolve(books[isbn]);
-      // return books[isbn]
     } else {
       reject(new Error(`No book found with ISBN: ${isbn}`));
     }

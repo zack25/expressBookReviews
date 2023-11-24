@@ -56,10 +56,7 @@ regd_users.put("/auth/review/:isbn", async (req, res) => {
 
   try {
     setUserBookReview(isbn, username, review);
-    // let book = books[isbn];
-    //function to add/modify review to isbn
-    // book.reviews[username] = { content: req.body.review, date: new Date() };
-    return res.status(200).json({ message: `Successfully saved review for isbn ${req.body.isbn}: ${req.body.review}` });
+    return res.status(200).json({ message: `Successfully saved review for isbn ${req.params.isbn}: ${req.body.review}` });
   } catch (error){
 
     return res.status(404).json({ message: error.message });
@@ -70,14 +67,13 @@ regd_users.put("/auth/review/:isbn", async (req, res) => {
 
 regd_users.delete("/auth/review/:isbn", async (req, res) => {
   let isbn = req.params.isbn;
-  let username = req.params.username;
+  let username = req.body.username;
   try {
     deleteUserBookReview(isbn, username);
+    res.status(200).json({message: `Successfully deleted review for isbn ${isbn} written by user: ${username}`});
   } catch(error){
     return res.status(404).json({message: error.message});
   }
-  //function to delete review of specified isbn
-  // if 
 
 });
 
