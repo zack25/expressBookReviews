@@ -52,11 +52,11 @@ regd_users.put("/auth/review/:isbn", async (req, res) => {
   
   let isbn = req.params.isbn;
   let username = req.body.username;
-  let review = {content: req.body.review, date: new Date()};
+  let review = {content: req.query.review, date: new Date()};
 
   try {
     setUserBookReview(isbn, username, review);
-    return res.status(200).json({ message: `Successfully saved review for isbn ${req.params.isbn}: ${req.body.review}` });
+    return res.status(200).json({ message: `Successfully saved review for isbn ${isbn}: ${review.content}` });
   } catch (error){
 
     return res.status(404).json({ message: error.message });
